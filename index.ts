@@ -1,12 +1,11 @@
 require('dotenv').config();
 require('express-async-errors');
 const path = require('path');
-
 const express = require('express');
 const app = express();
 
 //db
-const connectDB = require('./db/connect');
+const connectDB = require('./db/connect.ts');
 
 //packages
 const cookieParser = require('cookie-parser');
