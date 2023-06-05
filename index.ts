@@ -1,21 +1,34 @@
 require('dotenv').config();
 require('express-async-errors');
-const path = require('path');
-const express = require('express');
+
+import express from 'express';
+import path from 'path';
 const app = express();
 
-//db
-const connectDB = require('./db/connect.ts');
+// //custom middleware
+import notFoundMiddleware from './middleware/not-found';
+import errorHandlerMiddleware from './middleware/error-handler';
 
-//packages
-const cookieParser = require('cookie-parser');
-const rateLimiter = require('express-rate-limit');
-const helmet = require('helmet');
-const xss = require('xss-clean');
+//router
+import authRouter from './routers/authRoutes';
+import productRouter from './routers/productRoutes';
+
+// //db
+import connectDB from './db/connect';
+
+// //packages
+import rateLimiter from 'express-rate-limit';
+import helmet from 'helmet';
+import xss from 'xss-clean';
+// //cors
 const cors = require('cors');
+const corsOptions = {
+  origin: true,
+  credentials: true,
+};
 const mongoSanitize = require('express-mongo-sanitize');
 
-//middleware
+// //middleware
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -23,12 +36,21 @@ app.use(
   })
 );
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(xss());
 app.use(mongoSanitize());
 app.use(express.json());
 app.use(express.static('./public'));
 app.use(express.static(path.join(__dirname, '/client/build')));
+
+//routes
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/product', productRouter);
+
+//not found
+app.use(notFoundMiddleware);
+//error handler
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5000;
 

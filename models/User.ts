@@ -2,6 +2,7 @@ import { Schema, model, Model } from 'mongoose';
 import { IUser, IUserMethods } from '../interface/IUser';
 import { IAddress } from '../interface/IAddress';
 import bcrypt from 'bcryptjs';
+import { MAX_NUM_OF_ADDRESSES } from '../utils/constants';
 
 export const addressSchema = new Schema<IAddress>({
   attn: {
@@ -71,7 +72,23 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   defaultAddress: {
     type: addressSchema,
   },
+  addresses: {
+    type: [
+      {
+        addressSchema,
+      },
+    ],
+    validate: [
+      validateAddressArrayLength,
+      `{PATH} exceeds the limit of ${MAX_NUM_OF_ADDRESSES}`,
+    ],
+  },
 });
+
+//validate the length of addresses array
+function validateAddressArrayLength(arr) {
+  return arr.length <= MAX_NUM_OF_ADDRESSES;
+}
 
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) {

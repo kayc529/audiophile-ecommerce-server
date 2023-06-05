@@ -4,7 +4,7 @@ export const createJWT = ({ payload }) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET);
 };
 
-export const isTokenValid = (token) => {
+export const isTokenValid = (token: string) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 

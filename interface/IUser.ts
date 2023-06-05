@@ -9,6 +9,7 @@ export interface IUser extends Document {
   phoneNumber: string;
   role: string;
   defaultAddress?: IAddress;
+  addresses?: IAddress[];
 }
 
 export interface IUserMethods {

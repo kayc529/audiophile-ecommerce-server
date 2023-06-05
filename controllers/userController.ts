@@ -1,52 +1,47 @@
 import { User } from '../models/User';
 import { StatusCodes } from 'http-status-codes';
+import { BadRequestError, UnauthorizedError } from '../error';
 import { createTokenUser } from '../utils/createTokenUser';
-import crypto from 'crypto';
-import { attachCookieToResponse } from '../utils/jwt';
 
-export const register = async (req, res) => {
-  const { firstName, lastName, email, password, phoneNumber } = req.body;
+export const getUserInfo = async (req, res) => {
+  const { userId } = req.params;
+  const user = req.user;
 
-  const existingUser = await User.findOne({ email });
-
-  if (existingUser) {
-    //throw error
-    return;
+  if (user._id !== userId && user.role !== 'admin') {
+    throw new UnauthorizedError('No authorization');
   }
 
-  const user = await User.create({
-    firstName,
-    lastName,
-    email,
-    password,
-    phoneNumber,
-  });
-
-  //create token user
-  const tokenUser = createTokenUser(user);
-
-  //generate refresh token
-  const refreshToken = crypto.randomBytes(40).toString('hex');
-
-  //attach cookie to response
-  attachCookieToResponse({ res, user: tokenUser, refreshToken });
-
-  res.status(StatusCodes.CREATED).json({ success: true });
+  res.status(StatusCodes.OK).json({ success: true, user: user });
 };
 
-export const login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
+export const updateUser = async (req, res) => {
+  const userInfo = req.body;
+  //get this user object from authenication middleware
+  const reqUser = req.user;
 
-  if (!user) {
-    //throw error
-    return;
+  const user = await User.findOne({ _id: reqUser._id });
+
+  //if user wants to update password
+  //check if current password matched with the one in DB
+  if (userInfo.currentPassword) {
+    const isPasswordCorrect = await user?.comparePasswords(
+      userInfo.currentPassword
+    );
+    if (!isPasswordCorrect) {
+      throw new BadRequestError('Invalid credentials');
+    }
   }
 
-  const isPasswordCorrect = await user.comparePasswords(password);
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: reqUser._id },
+    userInfo,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
-  if (!isPasswordCorrect) {
-    //throw error
-    return;
-  }
+  let returnUser = createTokenUser(updatedUser);
+
+  res.status(StatusCodes.OK).json({ success: true, user: returnUser });
 };

@@ -1,6 +1,11 @@
 import { IUser } from '../interface/IUser';
+import { NotFoundError } from '../error';
 
-export const createTokenUser = (user: IUser) => {
+export const createTokenUser = (user: IUser | null) => {
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
   return {
     userId: user._id,
     email: user.email,
