@@ -11,6 +11,7 @@ import errorHandlerMiddleware from './middleware/error-handler';
 
 //router
 import authRouter from './routers/authRoutes';
+import userRouter from './routers/userRoutes';
 import productRouter from './routers/productRoutes';
 
 // //db
@@ -45,6 +46,7 @@ app.use(express.static(path.join(__dirname, '/client/build')));
 
 //routes
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/user', userRouter);
 app.use('/api/v1/product', productRouter);
 
 //not found
