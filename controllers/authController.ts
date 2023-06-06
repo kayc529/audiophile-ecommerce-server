@@ -3,15 +3,18 @@ import { StatusCodes } from 'http-status-codes';
 import { createTokenUser } from '../utils/createTokenUser';
 import crypto from 'crypto';
 import { attachCookieToResponse } from '../utils/jwt';
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthenticatedError,
-  UnauthorizedError,
-} from '../error';
+import { BadRequestError } from '../error';
 
 export const register = async (req, res) => {
-  const { firstName, lastName, email, password, phoneNumber } = req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    phoneNumber,
+    defaultAddress,
+    role,
+  } = req.body;
 
   const existingUser = await User.findOne({ email });
 
@@ -25,6 +28,8 @@ export const register = async (req, res) => {
     email,
     password,
     phoneNumber,
+    defaultAddress,
+    role,
   });
 
   //create token user
@@ -44,13 +49,13 @@ export const login = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new BadRequestError('Invalid crudentials');
+    throw new BadRequestError('Invalid credentials');
   }
 
   const isPasswordCorrect = await user.comparePasswords(password);
 
   if (!isPasswordCorrect) {
-    throw new BadRequestError('Invalid crudentials');
+    throw new BadRequestError('Invalid credentials');
   }
 
   const tokenUser = createTokenUser(user);

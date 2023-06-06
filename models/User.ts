@@ -34,56 +34,57 @@ export const addressSchema = new Schema<IAddress>({
     type: String,
     require: true,
   },
-  isDefault: {
-    type: Boolean,
-    default: false,
-  },
+  // isDefault: {
+  //   type: Boolean,
+  //   default: false,
+  // },
 });
 
 // Create a new Model type that knows about IUserMethods
 type UserModel = Model<IUser, {}, IUserMethods>;
 
 // And a schema that knows about IUserMethods
-const userSchema = new Schema<IUser, UserModel, IUserMethods>({
-  firstName: {
-    type: String,
-    require: true,
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
+  {
+    firstName: {
+      type: String,
+      require: true,
+    },
+    lastName: {
+      type: String,
+      require: true,
+    },
+    email: {
+      type: String,
+      require: true,
+    },
+    password: {
+      type: String,
+      require: true,
+    },
+    phoneNumber: {
+      type: String,
+      require: true,
+    },
+    role: {
+      type: String,
+      require: true,
+      enum: ['USER', 'ADMIN'],
+      default: 'USER',
+    },
+    defaultAddress: {
+      type: addressSchema,
+    },
+    addresses: {
+      type: [addressSchema],
+      validate: [
+        validateAddressArrayLength,
+        `{PATH} exceeds the limit of ${MAX_NUM_OF_ADDRESSES}`,
+      ],
+    },
   },
-  lastName: {
-    type: String,
-    require: true,
-  },
-  email: {
-    type: String,
-    require: true,
-  },
-  password: {
-    type: String,
-    require: true,
-  },
-  phoneNumber: {
-    type: String,
-    require: true,
-  },
-  role: {
-    type: String,
-    require: true,
-  },
-  defaultAddress: {
-    type: addressSchema,
-  },
-  addresses: {
-    type: [
-      {
-        addressSchema,
-      },
-    ],
-    validate: [
-      validateAddressArrayLength,
-      `{PATH} exceeds the limit of ${MAX_NUM_OF_ADDRESSES}`,
-    ],
-  },
-});
+  { timestamps: true }
+);
 
 //validate the length of addresses array
 function validateAddressArrayLength(arr) {

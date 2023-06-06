@@ -10,7 +10,7 @@ export const getAllProducts = async (req, res) => {
 export const getProduct = async (req, res) => {
   const { id: productId } = req.params;
   const product = await Product.findOne({
-    $or: [{ _id: productId }, { productCode: productId }],
+    $or: [{ _id: productId }, { productId: productId }],
   });
 
   if (!product) {
@@ -31,7 +31,7 @@ export const updateProduct = async (req, res) => {
   const productObj = req.body;
 
   const product = await Product.findOne({
-    $or: [{ _id: productObj._id }, { productCode: productObj._id }],
+    $or: [{ _id: productObj._id }, { productId: productObj._id }],
   });
 
   if (!product) {
@@ -40,7 +40,7 @@ export const updateProduct = async (req, res) => {
 
   const updatedProduct = await Product.findOneAndUpdate(
     {
-      $or: [{ _id: productObj._id }, { productCode: productObj._id }],
+      $or: [{ _id: productObj._id }, { productId: productObj._id }],
     },
     productObj,
     { new: true, runValidators: true }
@@ -52,7 +52,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   const { productId } = req.params;
   const product = await Product.findOneAndDelete({
-    $or: [{ _id: productId }, { productCode: productId }],
+    $or: [{ _id: productId }, { productId: productId }],
   });
 
   res.status(StatusCodes.OK).json({ success: true });

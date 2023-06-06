@@ -1,9 +1,9 @@
 import { IUser } from '../interface/IUser';
-import { NotFoundError } from '../error';
+import { BadRequestError } from '../error';
 
 export const createTokenUser = (user: IUser | null) => {
   if (!user) {
-    throw new NotFoundError('User not found');
+    throw new BadRequestError('User undefined');
   }
 
   return {

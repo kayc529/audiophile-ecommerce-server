@@ -13,11 +13,13 @@ import errorHandlerMiddleware from './middleware/error-handler';
 import authRouter from './routers/authRoutes';
 import userRouter from './routers/userRoutes';
 import productRouter from './routers/productRoutes';
+import orderRouter from './routers/orderRoutes';
 
 // //db
 import connectDB from './db/connect';
 
 // //packages
+import cookieParser from 'cookie-parser';
 import rateLimiter from 'express-rate-limit';
 import helmet from 'helmet';
 import xss from 'xss-clean';
@@ -43,11 +45,13 @@ app.use(mongoSanitize());
 app.use(express.json());
 app.use(express.static('./public'));
 app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(cookieParser(process.env.JWT_SECRET));
 
 //routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/product', productRouter);
+app.use('/api/v1/order', orderRouter);
 
 //not found
 app.use(notFoundMiddleware);

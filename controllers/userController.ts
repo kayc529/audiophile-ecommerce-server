@@ -1,6 +1,6 @@
 import { User } from '../models/User';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError, UnauthorizedError } from '../error';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../error';
 import { createTokenUser } from '../utils/createTokenUser';
 
 export const getAllUsers = async (req, res) => {
@@ -9,10 +9,10 @@ export const getAllUsers = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
-  const { userId } = req.params;
+  const { id: userId } = req.params;
   const reqUser = req.user;
 
-  if (reqUser._id !== userId && reqUser.role !== 'admin') {
+  if (reqUser.userId !== userId && reqUser.role !== 'ADMIN') {
     throw new UnauthorizedError('No authorization');
   }
 
@@ -30,11 +30,11 @@ export const updateUser = async (req, res) => {
   //get this user object from authenication middleware
   const reqUser = req.user;
 
-  if (reqUser._id !== userId && reqUser.role !== 'admin') {
+  if (reqUser.userId !== userId && reqUser.role !== 'ADMIN') {
     throw new UnauthorizedError('No authorization');
   }
 
-  const user = await User.findOne({ _id: reqUser._id });
+  const user = await User.findOne({ _id: userId });
 
   //if user wants to update password
   //check if current password matched with the one in DB
@@ -48,8 +48,8 @@ export const updateUser = async (req, res) => {
   }
 
   const updatedUser = await User.findOneAndUpdate(
-    { _id: reqUser._id },
-    userInfo,
+    { _id: userId },
+    { ...userInfo },
     {
       new: true,
       runValidators: true,
@@ -63,6 +63,12 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const { id: userId } = req.params;
+
+  const user = await User.findOne({ _id: userId });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
 
   await User.findOneAndDelete({ _id: userId });
 
