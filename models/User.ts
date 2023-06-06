@@ -62,10 +62,6 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       type: String,
       require: true,
     },
-    phoneNumber: {
-      type: String,
-      require: true,
-    },
     role: {
       type: String,
       require: true,

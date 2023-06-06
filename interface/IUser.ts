@@ -6,7 +6,6 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
-  phoneNumber: string;
   role: string;
   defaultAddress?: IAddress;
   addresses?: IAddress[];
