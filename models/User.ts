@@ -57,6 +57,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     email: {
       type: String,
       require: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -77,6 +78,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
         validateAddressArrayLength,
         `{PATH} exceeds the limit of ${MAX_NUM_OF_ADDRESSES}`,
       ],
+      default: [],
     },
   },
   { timestamps: true }

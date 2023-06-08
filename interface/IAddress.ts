@@ -1,4 +1,5 @@
 export interface IAddress {
+  _id?: string;
   attn: string;
   unit?: string;
   street: string;
