@@ -89,13 +89,11 @@ export const updateAddress = async (req, res) => {
   let { address } = req.body;
   const reqUser = req.user;
 
-  console.log(address);
-
   let user = null;
 
   if (address._id) {
     //if the user updates an existing address
-    user = await User.findByIdAndUpdate(
+    user = await User.findOneAndUpdate(
       { _id: reqUser.userId, 'addresses._id': address._id },
       {
         $set: { 'addresses.$': address },
@@ -124,10 +122,6 @@ export const updateAddress = async (req, res) => {
       user.defaultAddress = user.addresses[0];
     }
   }
-
-  // if (!user) {
-  //   throw new NotFoundError('User not found');
-  // }
 
   await user.save();
 
