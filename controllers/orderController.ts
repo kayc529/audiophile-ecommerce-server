@@ -1,4 +1,5 @@
 import { Order } from '../models/Order';
+import { Sequence } from '../models/Sequence';
 import { StatusCodes } from 'http-status-codes';
 import { NotFoundError, UnauthorizedError } from '../error';
 
@@ -21,17 +22,31 @@ export const getOrder = async (req, res) => {
 export const getUserOrders = async (req, res) => {
   const user = req.user;
 
-  const orders = await Order.find({ customerId: user.userId });
+  const orders = await Order.find({ customerId: user.userId }).sort({
+    createdAt: -1,
+  });
 
   res.status(StatusCodes.OK).json({ success: true, orders });
 };
 
+//auto-increase orderId by 1 for the next order
+const getNextOrderId = async () => {
+  const sequenceDoc = await Sequence.findOneAndUpdate(
+    { _id: 'orderId' },
+    { $inc: { sequence: 1 } },
+    { new: true }
+  );
+
+  return sequenceDoc.sequence;
+};
+
 export const createOrder = async (req, res) => {
   const order = req.body;
+  const nextOrderId = await getNextOrderId();
 
-  await Order.create({ ...order });
+  const newOrder = await Order.create({ ...order, orderId: nextOrderId });
 
-  res.status(StatusCodes.CREATED).json({ success: true });
+  res.status(StatusCodes.CREATED).json({ success: true, order: newOrder });
 };
 
 export const updateOrder = async (req, res) => {

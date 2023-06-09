@@ -5,8 +5,13 @@ import { addressSchema } from './User';
 const orderSchema = new Schema<IOrder>(
   {
     customerId: {
-      type: Schema.Types.ObjectId,
+      type: Schema.Types.Mixed,
       immutable: true,
+    },
+    orderId: {
+      type: Number,
+      immutable: true,
+      require: true,
     },
     status: {
       type: String,
