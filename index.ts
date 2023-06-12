@@ -14,6 +14,7 @@ import authRouter from './routers/authRoutes';
 import userRouter from './routers/userRoutes';
 import productRouter from './routers/productRoutes';
 import orderRouter from './routers/orderRoutes';
+import cartRouter from './routers/cartRoutes';
 
 // //db
 import connectDB from './db/connect';
@@ -52,6 +53,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/product', productRouter);
 app.use('/api/v1/order', orderRouter);
+app.use('/api/v1/cart', cartRouter);
 
 //not found
 app.use(notFoundMiddleware);

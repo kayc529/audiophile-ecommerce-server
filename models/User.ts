@@ -80,6 +80,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       ],
       default: [],
     },
+    cartId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Cart',
+    },
   },
   { timestamps: true }
 );

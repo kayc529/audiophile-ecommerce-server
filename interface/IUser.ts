@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { IAddress } from './IAddress';
 
 export interface IUser extends Document {
@@ -9,6 +9,7 @@ export interface IUser extends Document {
   role: string;
   defaultAddress?: IAddress;
   addresses?: IAddress[];
+  cartId?: Types.ObjectId;
 }
 
 export interface IUserMethods {
