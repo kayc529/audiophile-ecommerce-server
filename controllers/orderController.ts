@@ -2,6 +2,7 @@ import { Order } from '../models/Order';
 import { Sequence } from '../models/Sequence';
 import { StatusCodes } from 'http-status-codes';
 import { NotFoundError, UnauthorizedError } from '../error';
+import { Cart } from '../models/Cart';
 
 export const getAllOrders = async (req, res) => {
   const orders = await Order.find({});
@@ -42,9 +43,13 @@ const getNextOrderId = async () => {
 
 export const createOrder = async (req, res) => {
   const order = req.body;
+  const sessionId = req.sessionId;
   const nextOrderId = await getNextOrderId();
 
+  //create new order
   const newOrder = await Order.create({ ...order, orderId: nextOrderId });
+  //empty the cart for this session
+  await Cart.findOneAndUpdate({ sessionId }, { items: [] });
 
   res.status(StatusCodes.CREATED).json({ success: true, order: newOrder });
 };
